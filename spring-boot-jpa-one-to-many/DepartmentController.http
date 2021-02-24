@@ -1,0 +1,5 @@
+GET http://localhost:8087/departments
+Accept: application/json
+
+###
+DELETE http://localhost:8087/department/5
