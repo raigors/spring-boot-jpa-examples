@@ -1,0 +1,8 @@
+GET http://localhost:8087/users?age=25&username=steven.marvin
+Accept: application/json
+
+###
+GET http://localhost:8087/dsl?age=25&username=steven.marvin
+Accept: application/json
+
+###

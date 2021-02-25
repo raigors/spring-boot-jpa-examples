@@ -31,21 +31,21 @@ public abstract class BaseEntity implements Serializable {
     private static final long serialVersionUID = -2179485616434241254L;
 
     @Column(columnDefinition = "TINYINT(1) DEFAULT 0 COMMENT '该记录是否逻辑删除'")
-    private Boolean deleted;
+    protected Boolean deleted;
 
     @CreatedDate
     @Column(name = "create_date", columnDefinition = "DATETIME COMMENT '创建时间'")
-    private LocalDateTime createDate;
+    protected LocalDateTime createDate;
 
     @LastModifiedDate
     @Column(name = "last_modified_date", columnDefinition = "DATETIME COMMENT '最后更新时间'")
-    private LocalDateTime lastModifiedDate;
+    protected LocalDateTime lastModifiedDate;
 
     @Version
     @Column(columnDefinition = "INT(11) NOT NULL DEFAULT 0 COMMENT '版本号-乐观锁'")
-    private Long version;
+    protected Long version;
 
     @Column(columnDefinition = "VARCHAR(100) DEFAULT '' COMMENT '备注信息'")
-    private String note;
+    protected String note;
 
 }
