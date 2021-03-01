@@ -31,6 +31,7 @@
         <module>spring-boot-jpa-event</module>
         <module>spring-boot-jpa-index</module>
         <module>spring-boot-jpa-jpql</module>
+        <module>spring-boot-jpa-json</module>
         <module>spring-boot-jpa-one-to-many</module>
         <module>spring-boot-jpa-projection</module>
         <module>spring-boot-jpa-querydsl</module>
