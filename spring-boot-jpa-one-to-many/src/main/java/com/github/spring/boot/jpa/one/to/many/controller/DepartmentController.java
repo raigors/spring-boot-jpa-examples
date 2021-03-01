@@ -30,6 +30,10 @@ public class DepartmentController {
         return repository.findAll(pageable);
     }
 
+    @GetMapping( "/department/{id}")
+    public DepartmentDO findAllDepartments(@PathVariable long id) {
+        return repository.findById(id);
+    }
 
     @DeleteMapping("/department/{id}")
     public String deleteDepartmentById(@PathVariable("id") DepartmentDO department) {

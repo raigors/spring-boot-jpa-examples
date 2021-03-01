@@ -12,4 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @version 0.0.1
  */
 public interface IDepartmentRepository extends JpaRepository<DepartmentDO, Long> {
+
+    DepartmentDO findById(long id);
+
 }

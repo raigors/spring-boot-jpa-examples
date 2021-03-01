@@ -10,10 +10,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MapKey;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -30,6 +32,9 @@ import static com.github.spring.boot.jpa.one.to.many.pojo.common.DepartmentConst
  * @author shishaodong
  * @version 0.0.1
  */
+@NamedEntityGraphs(value = {
+//        @NamedEntityGraph(name = "DepartmentDO.findById", attributeNodes = {@NamedAttributeNode("employees")})
+})
 @Getter
 @Setter
 @Builder
@@ -50,7 +55,7 @@ public class DepartmentDO extends BaseEntity {
 
     @MapKey
     @OrderBy("id ASC")
-    @OneToMany(mappedBy = DEPARTMENT)
+    @OneToMany(mappedBy = DEPARTMENT, fetch = FetchType.LAZY)
     @JsonManagedReference
     private Map<Long, EmployeeDO> employees;
 
