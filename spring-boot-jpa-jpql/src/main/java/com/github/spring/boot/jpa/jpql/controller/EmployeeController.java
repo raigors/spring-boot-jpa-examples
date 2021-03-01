@@ -1,6 +1,8 @@
 package com.github.spring.boot.jpa.jpql.controller;
 
+import com.github.spring.boot.jpa.jpql.pojo.orm.DepartmentDO;
 import com.github.spring.boot.jpa.jpql.pojo.orm.EmployeeDO;
+import com.github.spring.boot.jpa.jpql.pojo.vo.IDepartmentSimpleVO;
 import com.github.spring.boot.jpa.jpql.repository.IEmployeeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +32,15 @@ public class EmployeeController {
         return repository.findAllByAvg(pageable);
     }
 
+    @GetMapping("/employee/department/{id}")
+    public DepartmentDO findEmployeeDepartmentById(@PathVariable long id) {
+        return repository.findEmployeeDepartmentById(id);
+    }
+
+    @GetMapping("/employee/department/simple/{id}")
+    public IDepartmentSimpleVO findEmployeeDepartmentSimpleById(@PathVariable long id) {
+        return repository.findEmployeeDepartmentById(id, IDepartmentSimpleVO.class);
+    }
 
     @GetMapping("/employees")
     public Page<EmployeeDO> findAllEmployees(Pageable pageable) {

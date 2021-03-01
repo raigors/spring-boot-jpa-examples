@@ -1,5 +1,6 @@
 package com.github.spring.boot.jpa.jpql.repository;
 
+import com.github.spring.boot.jpa.jpql.pojo.orm.DepartmentDO;
 import com.github.spring.boot.jpa.jpql.pojo.orm.EmployeeDO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,26 @@ import org.springframework.transaction.annotation.Transactional;
  * @version 0.0.1
  */
 public interface IEmployeeRepository extends JpaRepository<EmployeeDO, Long> {
+
+    /**
+     * DepartmentDO
+     *
+     * @param id id
+     * @return DepartmentDO
+     */
+    @Query("SELECT employee.department FROM EmployeeDO AS employee WHERE employee.id = :id")
+    DepartmentDO findEmployeeDepartmentById(long id);
+
+    /**
+     * 不生效
+     *
+     * @param id
+     * @param clz
+     * @param <T>
+     * @return
+     */
+    @Query("SELECT employee.department FROM EmployeeDO AS employee WHERE employee.id = :id")
+    <T> T findEmployeeDepartmentById(long id, Class<T> clz);
 
     @Query("SELECT employee FROM EmployeeDO AS employee WHERE employee.age < (SELECT AVG(p.age) FROM employee p)")
     Page<EmployeeDO> findAllByAvg(Pageable pageable);
