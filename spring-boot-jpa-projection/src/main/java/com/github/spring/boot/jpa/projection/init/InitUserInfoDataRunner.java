@@ -20,7 +20,7 @@ import java.util.Locale;
  */
 @Slf4j
 @Component
-public class InitDataRunner implements CommandLineRunner {
+public class InitUserInfoDataRunner implements CommandLineRunner {
 
     private static final Faker FAKER = new Faker(Locale.CHINESE);
 
@@ -29,9 +29,8 @@ public class InitDataRunner implements CommandLineRunner {
     @Resource
     private ISimpleUserInfoRepository repository;
 
-
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         if (repository.count() == 0) {
             for (int i = 0; i < NUM; i++) {
                 SimpleUserInfoDO user = getUserInfo();
