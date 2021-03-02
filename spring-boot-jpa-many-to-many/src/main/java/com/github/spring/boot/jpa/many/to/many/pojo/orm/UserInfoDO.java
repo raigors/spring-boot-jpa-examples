@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -71,10 +73,25 @@ public class UserInfoDO extends BaseEntity {
     @ManyToMany(targetEntity = RoleInfoDO.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "many_to_many_role_user",
-            joinColumns = {@JoinColumn(name = MID_USER_ID, referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = MID_ROLE_ID, referencedColumnName = "id")}
+            joinColumns = @JoinColumn(name = MID_USER_ID, referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = MID_ROLE_ID, referencedColumnName = "id")
     )
     private List<RoleInfoDO> roles;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserInfoDO that = (UserInfoDO) o;
+        return new EqualsBuilder().append(id, that.id).isEquals();
+    }
 
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).toHashCode();
+    }
 }

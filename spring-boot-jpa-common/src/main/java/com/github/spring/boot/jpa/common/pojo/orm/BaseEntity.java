@@ -2,6 +2,8 @@ package com.github.spring.boot.jpa.common.pojo.orm;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,7 +23,7 @@ import java.time.LocalDateTime;
  * @author shishaodong
  * @version 0.0.1
  */
-
+@Audited
 @Getter
 @Setter
 @MappedSuperclass
@@ -35,6 +37,7 @@ public abstract class BaseEntity implements Serializable {
 
     @CreatedDate
     @Column(name = "create_date", columnDefinition = "DATETIME COMMENT '创建时间'")
+    @CreationTimestamp
     protected LocalDateTime createDate;
 
     @LastModifiedDate
