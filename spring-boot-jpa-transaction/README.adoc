@@ -1,0 +1,193 @@
+= SpringBoot JPA 事务
+:pdf-themesdir: ../themes
+:pdf-fontsdir: ../fonts
+:pdf-theme: KaiGenGothicCN
+:revnumber: v1.0
+:revdate: 2021-03-17
+
+:icons: font
+
+== 事务的隔离级别(isolation)
+
+[caption=""]
+.隔离级别{counter2:index:0}
+|===
+^|序号 ^|隔离级别 ^|描述 ^|备注 |Header 5
+
+|{counter:index}
+|READ_UNCOMMITTED
+|读未提交
+|Column 4, row 1
+|Column 5, row 1
+
+|{counter:index}
+|READ_COMMITTED
+|读已经提交
+|Column 4, row 1
+|Column 5, row 1
+
+|{counter:index}
+|REPEATABLE_READ
+|可重复读
+|MySQL默认是这个级别的
+|Column 5, row 1
+
+|{counter:index}
+|SERIALIZABLE
+|串行化
+|Column 4, row 1
+|Column 5, row 1
+|===
+
+== 超时(timeout)
+
+事务的超时时间,默认单位是秒
+
+== readOnly
+
+readOnly-boolean：设置事务为只读事务；可以进行事务优化；readOnly=true：加快事务查询速度：不用管事务那一顿操作。
+
+== rollbackFor
+
+发送哪些异常时,事务会回滚.
+
+异常分类 运行时异常(非检查异常)：可以不用处理，默认都回滚； 编译时异常(受检查异常)：要么 try-catch，要么在方法生声明 throws，默认不回滚；
+
+事务的回滚：默认发送运行时异常都回滚，发生编译时异常不会回滚。
+
+== noRollbackFor
+
+发送哪些异常时,事务不会回滚.
+
+== 事务的传播(propagation)
+
+Spring 定义了 7 中事务传播行为。
+
+[caption=""]
+.事务传播行为{counter2:index:0}
+|===
+|序号|传播属性 |描述
+
+|{counter:index}
+|REQUIRED
+|如果有事务在运行，当前的方法就在这个事务内运行，否则，就启动一个新的事务，并在自己的事务内运行。 +
+Spring默认就是这个传播行为。 +
+子代码如果配置了REQUIRED，那么timeout 之类的配置会失效。配置使用最顶层父类的配置。
+
+|{counter:index}
+|REQUIRES_NEW
+|当前的方法必须启动新事务，并在它自己的事务内运行。如果有事务正在运行，应该将它挂起
+
+|{counter:index}
+|SUPPORTS
+|如果有事务在运行，当前的方法就在这个事务内运行。否则它可以不再晕在事务中。
+
+|{counter:index}
+|NOT_SUPPORTED
+|当前的方法不应该运行在事务中，如果有运行的事务，将它挂起。
+
+|{counter:index}
+|MANDATORY
+|当前的方法必须运行在事务内部，如果没有正在运行的事务，就抛出异常。
+
+|{counter:index}
+|NEVER
+|房钱的方法不应该运行在事务中，如果有运行的事务，就抛出异常。
+
+|{counter:index}
+|NESTED
+|如果有事务在运行，当前的方法就应该在这个事务的嵌套事务内运行，否则，就启动一个新的事务，并在它自己的事务内运行。
+|===
+
+== noRollbackForClassName
+
+一般不用的
+
+== rollbackForClassName
+
+一般不用的
+
+== 代码
+:sourcedir: src/main/java/com/github/spring/boot/jpa/transaction
+
+[source,java]
+----
+include::{sourcedir}/service/UserInfoService.java[]
+----
+
+== 其他说明
+
+First-level cache always Associates with the Session object.
+Hibernate uses this cache by default.
+Here, it processes one transaction after another one, means wont process one transaction many times.
+Mainly it reduces the number of SQL queries it needs to generate within a given transaction.
+That is instead of updating after every modification done in the transaction, it updates the transaction only at the end of the transaction.
+
+The first level cache is associated with Session object.
+As we know session object is created on demand from session factory and it is lost, once the session is closed.
+Similarly, first level cache associated with session object is available only till session object is live.
+It is available to session object only and is not accessible to any other session object in any other part of application.
+
+Some Important Points:
+
+First level cache is associated with “session” object and other session objects in application can not see it.
+
+The scope of cache objects is of session.
+Once session is closed, cached objects are gone forever.
+
+First level cache is enabled by default and you can not disable it.
+
+When we query an entity first time, it is retrieved from database and stored in first level cache associated with hibernate session.
+
+If we query same object again with same session object, it will be loaded from cache and no sql query will be executed.
+
+The loaded entity can be removed from session using evict() method.
+The next loading of this entity will again make a database call if it has been removed using evict() method.
+
+The whole session cache can be removed using clear() method.
+It will remove all the entities stored in cache.
+
+
+https://howtodoinjava.com/hibernate/understanding-hibernate-first-level-cache-with-example/
+
+== redo log 简介
+
+[TIP]
+====
+redo log 属于存储引擎侧的技术, 主要是为了解决 innodb 事务的问题, 为了保证一致性, 用户提交完事务后, mysql 会将用户提交的数据写到 redo log 中,
+等 redo log 写入成功后给用户返回成功.
+====
+
+[qanda]
+为什么写入的是 redo log 不直接写磁盘::
+mysql
+
+
+== 查看 redo log 相关的配置.
+
+查看 redo log 的文件大小, 默认是 48M.
+`SHOW GLOBAL VARIABLES LIKE '%innodb_log_file_size%'`;
+
+查看 redo log 的个数:
+`SHOW GLOBAL VARIABLES LIKE '%innodb_log_files_in_group%'`;
+
+写 redo log 时机配置项, 默认是 1:
+`SHOW GLOBAL VARIABLES LIKE '%innodb_flush_log_at_trx_commit%';`
+
+|===
+|配置值 |描述
+
+|0
+|表示事物提交时,不不立即对 redo log 进行持久化,这个任务交给后台线程去做
+
+|1
+|表示事务提交时,立即把 redo log 进行持久化.默认值是 1.
+
+|2
+|表示事务提交时,立即将 redo log 写到操作系统的缓存区,并不会直接将 redo log 进行持久化. +
+这种情况下, 如果数据库挂了,操作系统没挂,那么事务的持久性还是可以保证的.
+|===
+
+
+
+

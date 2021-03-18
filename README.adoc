@@ -1,0 +1,49 @@
+= SpringBoot JPA
+:pdf-themesdir: theme
+:pdf-fontsdir: fonts
+:pdf-theme: KaiGenGothicCN
+
+:icons: font
+
+
+MySQL把链表按比例分成两截:
+
+. 热数据区域,用来存放使用频率非常高的数据页;
+
+. 冷数据区域,用来存放使用频率不是很高的数据页;
+
+. 通过 innodb_old_blocks_pct 可以调整区域比例.
+
+
+使用 UPDATE 语句时,会生产一个 redo_log
+redo_log 持久化
+innodb_flush_log_at_trx_commit
+
+|===
+^|配置值 ^|描述
+
+^|0
+|表示事务提交时,不利己对 redo_log 进行持久化,这个任务交给后台线程去做
+
+^|1
+|表示事务提交时,立即把 redo_log 进行持久化
+
+^|2
+|表示事务提交时,立即将 redo_log 写到操作系统的缓冲区,并不会直接将 redo_log 进行持久化,这种情况下,如果数据库挂了,操作系统没有挂,那么事务的持久性还是可以保证的
+|===
+
+
+write -> 写到内存中(操作系统的缓存)
+
+flush -> 写到磁盘中
+
+image::image/MySQL存储-1.jpg[数据页]
+
+image::image/MySQL存储-2.jpg[数据页]
+
+image::image/MySQL存储-3.jpg[数据页]
+
+image::image/MySQL存储-4.jpg[数据页]
+
+image::image/MySQL存储-5.jpg[数据页]
+
