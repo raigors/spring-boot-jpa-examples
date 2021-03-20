@@ -3,11 +3,9 @@ package com.github.spring.boot.jpa.transaction.repository;
 
 import com.github.spring.boot.jpa.transaction.pojo.orm.UserInfoDO;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import javax.persistence.LockModeType;
 import java.util.Optional;
 
 /**
@@ -20,6 +18,14 @@ import java.util.Optional;
  */
 
 public interface IUserInfoRepository extends JpaRepository<UserInfoDO, Long> {
+
+    @Query("SELECT user.username FROM UserInfoDO AS user WHERE user.id = :id")
+    Optional<String> findUsernameById(long id);
+
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE UserInfoDO AS user SET user.age = (user.age + 1) WHERE user.id = :id")
+    int updateAge(long id);
 
     /**
      * 根据 ID 更新用户名

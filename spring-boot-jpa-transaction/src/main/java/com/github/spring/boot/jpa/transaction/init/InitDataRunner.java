@@ -23,11 +23,10 @@ public class InitDataRunner implements CommandLineRunner {
 
     private static final Faker FAKER = new Faker(Locale.CHINESE);
 
-    private static final int NUM = 100;
+    private static final int NUM = 1;
 
     @Resource
     private IUserInfoRepository repository;
-
 
     @Override
     public void run(String... args) throws Exception {

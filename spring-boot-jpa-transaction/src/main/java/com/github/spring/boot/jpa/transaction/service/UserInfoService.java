@@ -14,7 +14,7 @@ import javax.persistence.PersistenceContext;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
+import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 /**
@@ -44,21 +44,19 @@ public class UserInfoService {
     }
 
     @Async
-    @Transactional(readOnly = true, rollbackFor = Exception.class, isolation = Isolation.READ_UNCOMMITTED, propagation = NOT_SUPPORTED)
+    @Transactional(readOnly = true, rollbackFor = {Exception.class}, isolation = Isolation.READ_UNCOMMITTED, propagation = REQUIRED)
     public void findUserById(long id) throws InterruptedException {
         Optional<UserInfoDO> optional1 = repository.findUserInfoDOById(id);
         UserInfoDO user1 = optional1.orElseGet(UserInfoDO::new);
         log.info("FindUserById - 1 - {}", user1.toString());
         TimeUnit.SECONDS.sleep(3);
-//        entityManager.refresh(user1);
         Optional<UserInfoDO> optional2 = repository.findUserInfoDOById(id);
         UserInfoDO user2 = optional2.orElseGet(UserInfoDO::new);
         log.info("FindUserById - 2 - {}", user2.toString());
-//        assert user1.getUsername().equals(user2.getUsername());
     }
 
     @Async
-    @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_UNCOMMITTED, propagation = REQUIRES_NEW)
+    @Transactional(rollbackFor = {Exception.class}, isolation = Isolation.READ_UNCOMMITTED, propagation = REQUIRES_NEW)
     public void updateUsernameById(long id) {
         Optional<UserInfoDO> optional1 = repository.findUserInfoDOById(id);
         log.info("before update:{}", optional1.orElseGet(UserInfoDO::new).getUsername());

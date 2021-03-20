@@ -58,7 +58,7 @@ public class UserInfoDO extends BaseEntity {
     @Column(nullable = false, columnDefinition = "VARCHAR(50) COMMENT '电子邮箱'")
     private String email;
 
-    @Column(nullable = false, columnDefinition = "TINYINT COMMENT '用户年龄'")
+    @Column(nullable = false, columnDefinition = "BIGINT COMMENT '用户年龄'")
     private Integer age;
 
 }

@@ -1,6 +1,6 @@
 = SpringBoot JPA 事务
-:pdf-themesdir: ../themes
-:pdf-fontsdir: ../fonts
+:pdf-themesdir: ../theme
+:pdf-fontsdir: ../font
 :pdf-theme: KaiGenGothicCN
 :revnumber: v1.0
 :revdate: 2021-03-17
@@ -9,34 +9,30 @@
 
 == 事务的隔离级别(isolation)
 
-[caption=""]
+[cols="^1a,^3a,^3a,^3a"]
 .隔离级别{counter2:index:0}
 |===
-^|序号 ^|隔离级别 ^|描述 ^|备注 |Header 5
+|序号 |隔离级别 |描述 |备注
 
 |{counter:index}
 |READ_UNCOMMITTED
 |读未提交
 |Column 4, row 1
-|Column 5, row 1
 
 |{counter:index}
 |READ_COMMITTED
 |读已经提交
 |Column 4, row 1
-|Column 5, row 1
 
 |{counter:index}
 |REPEATABLE_READ
 |可重复读
 |MySQL默认是这个级别的
-|Column 5, row 1
 
 |{counter:index}
 |SERIALIZABLE
 |串行化
 |Column 4, row 1
-|Column 5, row 1
 |===
 
 == 超时(timeout)
@@ -63,10 +59,10 @@ readOnly-boolean：设置事务为只读事务；可以进行事务优化；read
 
 Spring 定义了 7 中事务传播行为。
 
-[caption=""]
+[cols="^1a,^2a,<5a"]
 .事务传播行为{counter2:index:0}
 |===
-|序号|传播属性 |描述
+^|序号 ^|传播属性 ^|描述
 
 |{counter:index}
 |REQUIRED
@@ -115,6 +111,16 @@ Spring默认就是这个传播行为。 +
 include::{sourcedir}/service/UserInfoService.java[]
 ----
 
+== 异常不会回滚的几种情况
+
+
+=== 受检异常
+
+
+===
+
+
+
 == 其他说明
 
 First-level cache always Associates with the Session object.
@@ -149,45 +155,6 @@ It will remove all the entities stored in cache.
 
 
 https://howtodoinjava.com/hibernate/understanding-hibernate-first-level-cache-with-example/
-
-== redo log 简介
-
-[TIP]
-====
-redo log 属于存储引擎侧的技术, 主要是为了解决 innodb 事务的问题, 为了保证一致性, 用户提交完事务后, mysql 会将用户提交的数据写到 redo log 中,
-等 redo log 写入成功后给用户返回成功.
-====
-
-[qanda]
-为什么写入的是 redo log 不直接写磁盘::
-mysql
-
-
-== 查看 redo log 相关的配置.
-
-查看 redo log 的文件大小, 默认是 48M.
-`SHOW GLOBAL VARIABLES LIKE '%innodb_log_file_size%'`;
-
-查看 redo log 的个数:
-`SHOW GLOBAL VARIABLES LIKE '%innodb_log_files_in_group%'`;
-
-写 redo log 时机配置项, 默认是 1:
-`SHOW GLOBAL VARIABLES LIKE '%innodb_flush_log_at_trx_commit%';`
-
-|===
-|配置值 |描述
-
-|0
-|表示事物提交时,不不立即对 redo log 进行持久化,这个任务交给后台线程去做
-
-|1
-|表示事务提交时,立即把 redo log 进行持久化.默认值是 1.
-
-|2
-|表示事务提交时,立即将 redo log 写到操作系统的缓存区,并不会直接将 redo log 进行持久化. +
-这种情况下, 如果数据库挂了,操作系统没挂,那么事务的持久性还是可以保证的.
-|===
-
 
 
 
