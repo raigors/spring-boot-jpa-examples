@@ -205,13 +205,13 @@ write -> 写到内存中(操作系统的缓存)
 
 flush -> 写到磁盘中
 
-image::image/MySQL存储-1.jpg[数据页]
+image::image/MySQL存储-1.jpg[title="每页数据结构",alt="Sunset",width="500",height="500"]
 
-image::image/MySQL存储-2.jpg[数据页]
+image::image/MySQL存储-2.jpg[title="每页数据结构",alt="Sunset",width="500",height="500"]
 
-image::image/MySQL存储-3.jpg[数据页]
+image::image/MySQL存储-3.jpg[title="索引结构",alt="Sunset",width="500",height="500"]
 
-image::image/MySQL存储-4.jpg[数据页]
+image::image/MySQL存储-4.jpg[title="BufferPool",alt="Sunset",width="500",height="500"]
 
-image::image/MySQL存储-5.jpg[数据页]
+image::image/MySQL存储-5.jpg[title=",链",alt="Sunset",width="500",height="500"]
 
