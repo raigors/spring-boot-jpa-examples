@@ -8,6 +8,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -23,29 +26,37 @@ import java.util.Locale;
 public class InitDataRunner implements CommandLineRunner {
 
     private static final Faker FAKER = new Faker(Locale.CHINESE);
+    private static final Faker FAKER2 = new Faker(Locale.CHINA);
 
-    private static final int NUM = 100;
+    private static final int NUM = 100000;
 
     @Resource
     private IUserInfoRepository repository;
 
-
     @Override
     public void run(String... args) throws Exception {
-        if (repository.count() == 0) {
-            for (int i = 0; i < NUM; i++) {
-                UserInfoDO user = getUserInfo();
-                repository.save(user);
-                log.info("save : {}", user.toString());
+        List<UserInfoDO> userList = new ArrayList<>(1000);
+        while (repository.count() < NUM) {
+            UserInfoDO user = getUserInfo();
+            if (!repository.existsByUsername(user.getUsername())) {
+                userList.add(user);
+            }
+            if (userList.size() >= 1000) {
+                repository.saveAll(userList);
+                userList = new ArrayList<>();
             }
         }
+        repository.saveAll(userList);
+
     }
 
     private UserInfoDO getUserInfo() {
         return UserInfoDO.builder()
                 .username(getUsername())
                 .email(getEmail())
+                .cellPhone(getCellPhone())
                 .age(getAge())
+                .birthday(getBirthday())
                 .build();
     }
 
@@ -60,5 +71,14 @@ public class InitDataRunner implements CommandLineRunner {
     private int getAge() {
         return FAKER.number().numberBetween(10, 50);
     }
+
+    private String getCellPhone() {
+        return FAKER2.phoneNumber().cellPhone();
+    }
+
+    private Date getBirthday() {
+        return FAKER.date().birthday(10, 50);
+    }
+
 
 }

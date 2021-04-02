@@ -28,7 +28,6 @@
 
     <modules>
         <module>spring-boot-jpa-cache</module>
-        <module>spring-boot-jpa-common</module>
         <module>spring-boot-jpa-converter</module>
         <module>spring-boot-jpa-event</module>
         <module>spring-boot-jpa-index</module>

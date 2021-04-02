@@ -11,8 +11,8 @@ package com.github.spring.boot.jpa.jpql.pojo.vo;
 
 public interface IDepartmentSimpleVO {
 
-      Long getId();
+    Long getId();
 
-      String getDepartmentName();
+    String getDepartmentName();
 
 }

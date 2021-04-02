@@ -30,7 +30,7 @@ public class DepartmentController {
         return repository.findAll(pageable);
     }
 
-    @GetMapping( "/department/{id}")
+    @GetMapping("/department/{id}")
     public DepartmentDO findAllDepartments(@PathVariable long id) {
         return repository.findById(id);
     }

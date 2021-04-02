@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import java.util.Date;
 
 import static com.github.spring.boot.jpa.index.pojo.common.UserInfoConstant.EMAIL;
 import static com.github.spring.boot.jpa.index.pojo.common.UserInfoConstant.USERNAME;
@@ -55,7 +56,12 @@ public class UserInfoDO extends BaseEntity {
     @Column(nullable = false, columnDefinition = "VARCHAR(50) COMMENT '电子邮箱'")
     private String email;
 
+    @Column(name = "cell_phone", nullable = false, columnDefinition = "VARCHAR(20) COMMENT '手机号码'")
+    private String cellPhone;
+
     @Column(nullable = false, columnDefinition = "TINYINT COMMENT '用户年龄'")
     private Integer age;
+
+    private Date birthday;
 
 }

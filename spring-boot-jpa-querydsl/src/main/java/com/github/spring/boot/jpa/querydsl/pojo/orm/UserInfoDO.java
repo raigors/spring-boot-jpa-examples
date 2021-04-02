@@ -40,7 +40,7 @@ import static com.github.spring.boot.jpa.querydsl.pojo.common.UserInfoConstant.U
         indexes = {@Index(columnList = EMAIL, name = "idx_email")},
         uniqueConstraints = {@UniqueConstraint(columnNames = {USERNAME}, name = "uk_username")}
 )
-public class UserInfoDO{
+public class UserInfoDO {
 
     private static final long serialVersionUID = 4882503753448314743L;
 

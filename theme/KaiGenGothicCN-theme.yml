@@ -17,7 +17,7 @@ page:
   layout: portrait
   # NOTE multiply inches by 72 to get pt values
   #margin: [0.5 * 72, 0.67 * 72, 0.67 * 72, 0.67 * 72]
-  margin: [0.5in, 0.67in, 0.67in, 0.67in]
+  margin: [ 0.5in, 0.67in, 0.67in, 0.67in ]
   # size can be a named size (e.g., A4) or custom dimensions (e.g., [8.25in, 11.69in])
   size: Letter
 base:
@@ -99,7 +99,7 @@ title_page:
 block:
   #margin_top: 0
   #margin_bottom: $vertical_rhythm
-  padding: [$vertical_rhythm, $vertical_rhythm * 1.25, $vertical_rhythm, $vertical_rhythm * 1.25]
+  padding: [ $vertical_rhythm, $vertical_rhythm * 1.25, $vertical_rhythm, $vertical_rhythm * 1.25 ]
 # code is used for source blocks (perhaps change to source or listing?)
 caption:
   font_style: italic
@@ -193,7 +193,7 @@ table:
   border_color: dddddd
   border_width: $base_border_width
   # HACK accounting for line-height
-  cell_padding: [3, 3, 6, 3]
+  cell_padding: [ 3, 3, 6, 3 ]
 toc:
   indent: $horizontal_rhythm
   dot_leader_color: dddddd
@@ -207,7 +207,7 @@ footer:
   border_color: dddddd
   border_width: 0.25
   height: $base_line_height_length * 2.5
-  padding: [$base_line_height_length / 2, 1, 0, 1]
+  padding: [ $base_line_height_length / 2, 1, 0, 1 ]
   valign: top
   #image_valign: <alignment> or <number>
   # additional attributes for content:

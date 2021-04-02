@@ -215,3 +215,8 @@ image::image/MySQL存储-4.jpg[title="BufferPool",alt="Sunset",width="500",heigh
 
 image::image/MySQL存储-5.jpg[title=",链",alt="Sunset",width="500",height="500"]
 
+== MySQL 查询优化技术
+
+
+
+
