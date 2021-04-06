@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -89,6 +90,22 @@ public class TransactionalExampleService {
         int num = repository.updateUsernameById(id, username);
         log.info("修改的 ID: {}, 修改的数据: {}, 修改结果: {}", id, username, num);
         int a = 11 / 0;
+    }
+
+    /**
+     * 这种情况不会回滚
+     * {@link Transactional#rollbackFor()} 中指定了非受检异常不回滚
+     *
+     * @param id       记录的 ID
+     * @param username 修改的数据
+     */
+    @Transactional(rollbackFor = {ArithmeticException.class})
+    public void transactionWillNotRollback5(long id, String username) throws NullPointerException {
+        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()).toString());
+        int num = repository.updateUsernameById(id, username);
+        log.info("修改的 ID: {}, 修改的数据: {}, 修改结果: {}", id, username, num);
+        String path = null;
+        new File(path);
     }
 
     private void method(long id, String username) throws IOException {

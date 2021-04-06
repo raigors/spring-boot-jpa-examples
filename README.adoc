@@ -4,49 +4,7 @@
 :pdf-theme: KaiGenGothicCN
 
 :icons: font
-
-
-== spring-boot-jpa 索引
-
-通过注解自动创建索引
-
-== spring-boot-jpa 转换器
-
-数据库中实体对象和基本对象的相互转换
-
-== spring-boot-jpa 投影
-
-DO 转换成 VO
-
-== spring-boot-jpa 事件
-
-领域事件
-
-== spring-boot-jpa jpql
-
-面向对象的查询 SQL
-
-== spring-boot-jpa 事务
-
-重难点
-
-== spring-boot-jpa 一对一
-
-== spring-boot-jpa 一对多
-
-== spring-boot-jpa 多对多
-
-== spring-boot-jpa 缓存
-
-一级缓存,二级缓存,应用层缓存
-
-== spring-boot-jpa 动态查询-specification
-
-动态查询
-
-== spring-boot-jpa 动态查询-querydsl
-
-动态查询
+:images: image
 
 == 深入了解 MySQL
 
@@ -54,11 +12,122 @@ DO 转换成 VO
 
 === InnoDB 索引原理
 
+索引结构
+
+回表
+
+==== 聚集索引
+
+==== 非聚集索引
+
+==== 聚簇索引
+
+==== 稠密索引
+
 === MySQL 的存储结构
 
-=== MySQL 的查询过程
+=== MySQL 的 SQL 执行过程
 
-=== MySQL 存储结构
+image::{images}/MySQL-SQL执行过程.jpg[title="SQL执行过程",alt="Sunset",width="500",height="500"]
+查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。 +
+需要注意的是，MySQL 8.0 版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。
+
+=== MySQL-InnoDB存储结构
+
+== redo log 简介
+
+[TIP]
+====
+redo log 属于存储引擎侧的技术, 主要是为了解决 innodb 事务的问题. +
+为了保证一致性, 用户提交完事务后, mysql 会将用户提交的数据写到 redo log 中, 等 redo log 写入成功后给用户返回成功.
+====
+
+[qanda]
+为什么写入的是 redo log 不直接写磁盘::
+mysql redo log 是顺序写, 数据落盘是随机读写.
+如图，redo log是可以循环写的，也就是写完最后一个文件时会重新从第一个文件开始写，因此这里画成了一个圈代表redo log，其中write pos指针表示当前写的位置，check pos的位置表示当前写入磁盘的开始位置，即这两个指针中间空的部分是redo log中空闲的部分，若write pos追上check pos时，那么就需要先将部分记录写入磁盘，check pos后移即可。
+
+事务提交时采用两阶段提交::
+TODO
+
+Unix 提供了sync、fsync、fdatasync三个函数
+sync只是将所有修改过的块放入写队列，不管它是否写磁盘结束就返回
+fsync会等待写磁盘结束才会返回。
+
+== 查看 redo log 相关的配置.
+
+查看 redo log 的文件大小, 默认是 48M.
+`SHOW GLOBAL VARIABLES LIKE '%innodb_log_file_size%'`;
+
+查看 redo log 的个数:
+`SHOW GLOBAL VARIABLES LIKE '%innodb_log_files_in_group%'`;
+
+写 redo log 时机配置项, 默认是 1:
+`SHOW GLOBAL VARIABLES LIKE '%innodb_flush_log_at_trx_commit%';`
+
+[cols="^1,<5"]
+|===
+|配置值 ^|描述
+
+|0
+|表示事物提交时,不不立即对 redo log 进行持久化,这个任务交给后台线程去做
+
+|1
+|表示事务提交时,立即把 redo log 进行持久化.默认值是 1.
+
+|2
+|表示事务提交时,立即将 redo log 写到操作系统的缓存区,并不会直接将 redo log 进行持久化. +
+这种情况下, 如果数据库挂了,操作系统没挂,那么事务的持久性还是可以保证的.
+|===
+
+write -> 写到内存中(操作系统的缓存)
+
+flush -> 写到磁盘中
+
+image::{images}/MySQL存储-1.jpg[title="每页数据结构",alt="Sunset",width="500",height="500"]
+
+image::{images}/MySQL存储-2.jpg[title="每页数据结构",alt="Sunset",width="500",height="500"]
+
+image::{images}/MySQL存储-3.jpg[title="索引结构",alt="Sunset",width="500",height="500"]
+
+image::{images}/MySQL存储-4.jpg[title="BufferPool",alt="Sunset",width="500",height="500"]
+
+image::{images}/MySQL存储-5.jpg[title=",链",alt="Sunset",width="500",height="500"]
+
+=== MySQL 锁
+
+==== 共享锁
+
+==== 排他锁
+
+==== 间隙锁
+
+==== 锁表情况
+
+对没有索引的列进行修改会锁定整个表
+
+[source,sql]
+====
+ALTER TABLE tb_user_info_index DROP INDEX uk_username;
+====
+
+客户端 1
+
+[source,sql]
+====
+START TRANSACTION;
+UPDATE tb_user_info_index SET username="arron.hackett111" WHERE username="arron.hackett";
+====
+
+客户端 2
+
+[source,sql]
+====
+START TRANSACTION;
+UPDATE tb_user_info_index SET username="beatriz.crist222" WHERE username="beatriz.crist";
+====
+
+这个时候客户端 2 会卡主直到客户端 1 `COMMIT` 或者 `ROLLBACK`.
 
 === 在线 DDL
 
@@ -164,56 +233,6 @@ ReadView 中主要包含 4 个比较重要的内容:
 LOCK_REC_NOT_GAP: 单个行记录上的锁.
 LOCk_GAP: 间隙锁,锁定一个范围,但不包括记录本身.GAP 锁的目的,是为了防止同一事物的两次当前读,出现幻读的情况.
 LOCK_ORDINARY: 锁定一个范围,并且锁定记录本上.对于行的查询,都是采用该方法,主要的目的是解决幻读的问题.
-
-== redo log 简介
-
-[TIP]
-====
-redo log 属于存储引擎侧的技术, 主要是为了解决 innodb 事务的问题, 为了保证一致性, 用户提交完事务后, mysql 会将用户提交的数据写到 redo log 中, 等 redo log 写入成功后给用户返回成功.
-====
-
-[qanda]
-为什么写入的是 redo log 不直接写磁盘::
-mysql
-
-== 查看 redo log 相关的配置.
-
-查看 redo log 的文件大小, 默认是 48M.
-`SHOW GLOBAL VARIABLES LIKE '%innodb_log_file_size%'`;
-
-查看 redo log 的个数:
-`SHOW GLOBAL VARIABLES LIKE '%innodb_log_files_in_group%'`;
-
-写 redo log 时机配置项, 默认是 1:
-`SHOW GLOBAL VARIABLES LIKE '%innodb_flush_log_at_trx_commit%';`
-
-|===
-|配置值 |描述
-
-|0
-|表示事物提交时,不不立即对 redo log 进行持久化,这个任务交给后台线程去做
-
-|1
-|表示事务提交时,立即把 redo log 进行持久化.默认值是 1.
-
-|2
-|表示事务提交时,立即将 redo log 写到操作系统的缓存区,并不会直接将 redo log 进行持久化. +
-这种情况下, 如果数据库挂了,操作系统没挂,那么事务的持久性还是可以保证的.
-|===
-
-write -> 写到内存中(操作系统的缓存)
-
-flush -> 写到磁盘中
-
-image::image/MySQL存储-1.jpg[title="每页数据结构",alt="Sunset",width="500",height="500"]
-
-image::image/MySQL存储-2.jpg[title="每页数据结构",alt="Sunset",width="500",height="500"]
-
-image::image/MySQL存储-3.jpg[title="索引结构",alt="Sunset",width="500",height="500"]
-
-image::image/MySQL存储-4.jpg[title="BufferPool",alt="Sunset",width="500",height="500"]
-
-image::image/MySQL存储-5.jpg[title=",链",alt="Sunset",width="500",height="500"]
 
 == MySQL 查询优化技术
 

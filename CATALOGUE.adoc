@@ -1,0 +1,41 @@
+== spring-boot-jpa 索引
+
+通过注解自动创建索引
+
+== spring-boot-jpa 转换器
+
+数据库中实体对象和基本对象的相互转换
+
+== spring-boot-jpa 投影
+
+DO 转换成 VO
+
+== spring-boot-jpa 事件
+
+领域事件
+
+== spring-boot-jpa jpql
+
+面向对象的查询 SQL
+
+== spring-boot-jpa 事务
+
+重难点
+
+== spring-boot-jpa 一对一
+
+== spring-boot-jpa 一对多
+
+== spring-boot-jpa 多对多
+
+== spring-boot-jpa 缓存
+
+一级缓存,二级缓存,应用层缓存
+
+== spring-boot-jpa 动态查询-specification
+
+动态查询
+
+== spring-boot-jpa 动态查询-querydsl
+
+动态查询

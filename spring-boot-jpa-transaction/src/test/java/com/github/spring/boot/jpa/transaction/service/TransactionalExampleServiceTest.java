@@ -106,4 +106,16 @@ class TransactionalExampleServiceTest {
         log.info(message);
         Assertions.assertEquals(saved.getUsername(), username, message);
     }
+
+    @Test
+    @DisplayName("抛出异常事务回滚-N")
+    void transactionWillNotRollback5() {
+        Assertions.assertThrows(Exception.class, () -> service.transactionWillNotRollback5(saved.getId(), UPDATE_USERNAME));
+        Optional<UserInfoDO> optional = repository.findById(saved.getId());
+        String username = optional.orElse(new UserInfoDO()).getUsername();
+        String message = "Before - " + saved.getUsername() + ", After " + username;
+        log.info(message);
+        Assertions.assertEquals(saved.getUsername(), username, message);
+    }
+
 }

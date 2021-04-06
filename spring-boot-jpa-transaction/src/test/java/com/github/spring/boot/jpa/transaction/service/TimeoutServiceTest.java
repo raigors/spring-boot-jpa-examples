@@ -61,6 +61,19 @@ class TimeoutServiceTest {
     }
 
     @Test
+    @DisplayName("抛出异常事务会回滚")
+    void timeoutWillRollback2() {
+        Assertions.assertThrows(Exception.class, () -> service.timeoutWillRollback2(saved.getId(), UPDATE_USERNAME));
+        Optional<UserInfoDO> optional = repository.findById(saved.getId());
+        String username = optional.orElse(new UserInfoDO()).getUsername();
+        String message = "Before - " + saved.getUsername() + ", After " + username;
+        log.info(message);
+        Assertions.assertEquals(saved.getUsername(), username, message);
+    }
+
+
+
+    @Test
     @DisplayName("抛出异常事务不会回滚")
     void timeoutWillNotRollback() throws InterruptedException {
         service.timeoutWillNotRollback(saved.getId(), UPDATE_USERNAME);
