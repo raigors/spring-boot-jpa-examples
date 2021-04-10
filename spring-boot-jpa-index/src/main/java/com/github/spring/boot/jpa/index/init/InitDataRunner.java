@@ -26,28 +26,31 @@ import java.util.Locale;
 public class InitDataRunner implements CommandLineRunner {
 
     private static final Faker FAKER = new Faker(Locale.CHINESE);
+
     private static final Faker FAKER2 = new Faker(Locale.CHINA);
 
     private static final int NUM = 100000;
+
+    private static final int BATCH = 100;
 
     @Resource
     private IUserInfoRepository repository;
 
     @Override
-    public void run(String... args) throws Exception {
-        List<UserInfoDO> userList = new ArrayList<>(1000);
+    public void run(String... args) {
+        List<UserInfoDO> userList = new ArrayList<>(BATCH);
         while (repository.count() < NUM) {
             UserInfoDO user = getUserInfo();
             if (!repository.existsByUsername(user.getUsername())) {
                 userList.add(user);
             }
-            if (userList.size() >= 1000) {
+            if (userList.size() >= BATCH) {
                 repository.saveAll(userList);
                 userList = new ArrayList<>();
             }
         }
         repository.saveAll(userList);
-
+        log.info("数据初始化完成!");
     }
 
     private UserInfoDO getUserInfo() {
@@ -57,6 +60,7 @@ public class InitDataRunner implements CommandLineRunner {
                 .cellPhone(getCellPhone())
                 .age(getAge())
                 .birthday(getBirthday())
+                .ip(getIp())
                 .build();
     }
 
@@ -80,5 +84,8 @@ public class InitDataRunner implements CommandLineRunner {
         return FAKER.date().birthday(10, 50);
     }
 
+    private String getIp() {
+        return FAKER.internet().publicIpV4Address();
+    }
 
 }

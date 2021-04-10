@@ -96,11 +96,23 @@ image::{images}/MySQL存储-5.jpg[title=",链",alt="Sunset",width="500",height="
 
 === MySQL 锁
 
-==== 共享锁
+在 Mysql 中，行级锁并不是直接锁记录，而是锁索引。索引分为主键索引和非主键索引两种，如果一条sql 语句操作了主键索引，Mysql 就会锁定这条主键索引；如果一条语句操作了非主键索引，MySQL会先锁定该非主键索引，再锁定相关的主键索引。
 
-==== 排他锁
+InnoDB 行锁是通过给索引项加锁实现的，如果没有索引，InnoDB 会通过隐藏的聚簇索引来对记录加锁。也就是说：如果不通过索引条件检索数据，那么InnoDB将对表中所有数据加锁，实际效果跟表锁一样。因为没有了索引，找到某一条记录就得扫描全表，要扫描全表，就得锁定表。
 
-==== 间隙锁
+==== 行锁（Record Locks）
+
+==== 共享锁/排他锁（Shared and Exclusive Locks）
+
+==== 意向共享锁/意向排他锁（Intention Shared and Exclusive Locks）
+
+==== 临键锁（Next-key Locks）
+
+==== 间隙锁（Gap Locks）
+
+==== 插入意向锁（Insert Intention Locks）
+
+==== 自增锁（Auto-inc Locks）
 
 ==== 锁表情况
 

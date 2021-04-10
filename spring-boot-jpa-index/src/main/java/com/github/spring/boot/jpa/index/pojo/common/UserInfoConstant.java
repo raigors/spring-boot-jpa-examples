@@ -17,7 +17,7 @@ public final class UserInfoConstant {
     /**
      * 表的名称
      */
-    public static final String USER_INFO = "tb_user_info_index";
+    public static final String USER_INFO = "tb_user_index";
 
     /**
      * 用户名
