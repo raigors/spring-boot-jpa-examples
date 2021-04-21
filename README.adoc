@@ -24,9 +24,8 @@
 
 ==== 稠密索引
 
-=== MySQL 的存储结构
 
-=== MySQL 的 SQL 执行过程
+=== MySQL 的SQL执行过程
 
 image::{images}/MySQL-SQL执行过程.jpg[title="SQL执行过程",alt="Sunset",width="500",height="500"]
 查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。 +
@@ -48,7 +47,15 @@ mysql redo log 是顺序写, 数据落盘是随机读写.
 如图，redo log是可以循环写的，也就是写完最后一个文件时会重新从第一个文件开始写，因此这里画成了一个圈代表redo log，其中write pos指针表示当前写的位置，check pos的位置表示当前写入磁盘的开始位置，即这两个指针中间空的部分是redo log中空闲的部分，若write pos追上check pos时，那么就需要先将部分记录写入磁盘，check pos后移即可。
 
 事务提交时采用两阶段提交::
-TODO
+为了保证事务的持久性，mysql的InnoDB采用了WAL 技术，WAL 的全称是 Write-Ahead Logging，它的关键点就是先写日志，再写磁盘。
+具体来说，当有一条记录需要更新的时候，InnoDB 引擎就会先把记录写到 redo log里面，并更新内存，这个时候更新就算完成了。同时，InnoDB 引擎会在适当的时候，将这个操作记录更新到磁盘里面，而这个更新往往是在系统比较空闲的时候做。
+InnoDB 的 redo log 是固定大小的，比如可以配置为一组 4 个文件，每个文件的大小是 1GB，那么这块“粉板”总共就可以记录 4GB 的操作。从头开始写，写到末尾就又回到开头循环写，如下面这个图所示。
+
+image::{images}/redo-log.png[title="SQL执行过程",alt="Sunset",width="500",height="500"]
+
+write pos 是当前记录的位置，一边写一边后移，写到第 3 号文件末尾后就回到 0 号文件开头。checkpoint 是当前要擦除的位置，也是往后推移并且循环的，擦除记录前要把记录更新到数据文件。write pos 和 checkpoint 之间的是还空着的部分，可以用来记录新的操作。如果 write pos 追上 checkpoint，表示redo log满了，这时候不能再执行新的更新，得停下来先擦掉一些记录，把 checkpoint 推进一下。有了 redo log，InnoDB 就可以保证即使数据库发生异常重启，之前提交的记录都不会丢失，这个能力称为 crash-safe。
+
+
 
 Unix 提供了sync、fsync、fdatasync三个函数
 sync只是将所有修改过的块放入写队列，不管它是否写磁盘结束就返回
@@ -64,6 +71,8 @@ fsync会等待写磁盘结束才会返回。
 
 写 redo log 时机配置项, 默认是 1:
 `SHOW GLOBAL VARIABLES LIKE '%innodb_flush_log_at_trx_commit%';`
+
+文件名称 `ib_logfile0`, `ib_logfile1`
 
 [cols="^1,<5"]
 |===
@@ -93,6 +102,14 @@ image::{images}/MySQL存储-3.jpg[title="索引结构",alt="Sunset",width="500",
 image::{images}/MySQL存储-4.jpg[title="BufferPool",alt="Sunset",width="500",height="500"]
 
 image::{images}/MySQL存储-5.jpg[title=",链",alt="Sunset",width="500",height="500"]
+
+=== Innodb 底层数据更新过程
+
+. 修改 Buffer pool 里面的页数据(脏页)
+. update 语句 生成一个 redo log
+. redo log 持久化
+. 修改成功
+
 
 === MySQL 锁
 
@@ -250,4 +267,28 @@ LOCK_ORDINARY: 锁定一个范围,并且锁定记录本上.对于行的查询,�
 
 
 
+=== MySQL Innodb 不支持在线修改表结构的场景
+[cols="^1,<5"]
+|===
+|操作 ^|语法
 
+|加全文索引
+|CREATE FULLTEXT INDEX name on table(column)
+
+|加空间索引
+|ALTER TABLE geom ADD SPATIAL INDEX(g)
+
+|删除主键
+|ALTER TABLE tb_name DROP PRIMARY KEY
+
+|增加自增列
+|ALTER TABLE t ADD COLUMN id int auto_increment not null PRIMARY KEY
+
+|修改列类型
+|ALTER TABLE tb_name CHANGE c1 c1 NEW_TYPE
+
+|改表字符集
+|ALTER TABLE tb_name CHARACTER SET = charset_name
+
+
+|===

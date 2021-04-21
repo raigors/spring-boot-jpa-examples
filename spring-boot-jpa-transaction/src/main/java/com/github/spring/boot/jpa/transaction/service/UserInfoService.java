@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -19,11 +17,13 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 
 /**
  * 同一个session内部，一级缓存生效，同一个id的对象只有一个。不同session，一级缓存无效。
- * <p>
- * create in 2021/3/12 5:13 下午
  *
  * @author shishaodong
  * @version 0.0.1
+ * \@PersistenceContext private EntityManager entityManager;
+ *
+ * <p>
+ * create in 2021/3/12 5:13 下午
  */
 
 @Slf4j
@@ -35,9 +35,6 @@ public class UserInfoService {
     @Resource
     private IUserInfoRepository repository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Transactional(readOnly = true, isolation = Isolation.READ_UNCOMMITTED)
     public UserInfoDO findUser(long id) {
         return repository.findById(id).orElse(null);
@@ -48,11 +45,11 @@ public class UserInfoService {
     public void findUserById(long id) throws InterruptedException {
         Optional<UserInfoDO> optional1 = repository.findUserInfoDOById(id);
         UserInfoDO user1 = optional1.orElseGet(UserInfoDO::new);
-        log.info("FindUserById - 1 - {}", user1.toString());
+        log.info("FindUserById - 1 - {}", user1);
         TimeUnit.SECONDS.sleep(3);
         Optional<UserInfoDO> optional2 = repository.findUserInfoDOById(id);
         UserInfoDO user2 = optional2.orElseGet(UserInfoDO::new);
-        log.info("FindUserById - 2 - {}", user2.toString());
+        log.info("FindUserById - 2 - {}", user2);
     }
 
     @Async

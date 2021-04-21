@@ -33,7 +33,7 @@ public class TimeoutService {
      */
     @Transactional(rollbackFor = {Exception.class}, timeout = 2, propagation = Propagation.REQUIRED)
     public void timeoutWillRollback(long id, String username) throws InterruptedException {
-        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()).toString());
+        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()));
         int num = repository.updateUsernameById(id, username);
         log.info("修改的 ID: {}, 修改的数据: {}, 修改结果: {}", id, username, num);
         TimeUnit.SECONDS.sleep(3);
@@ -45,18 +45,13 @@ public class TimeoutService {
      * @param username 修改的数据
      */
     @Transactional(rollbackFor = {Exception.class}, timeout = 2, propagation = Propagation.REQUIRED)
-    public void timeoutWillRollback2(long id, String username){
-        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()).toString());
+    public void timeoutWillRollback2(long id, String username) throws InterruptedException {
+        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()));
         int num = repository.updateUsernameById(id, username);
         log.info("修改的 ID: {}, 修改的数据: {}, 修改结果: {}", id, username, num);
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        } catch (InterruptedException exception) {
-            exception.printStackTrace();
-        }
+        TimeUnit.SECONDS.sleep(3);
         repository.updateAge(id);
     }
-
 
     /**
      * @param id       记录的 ID
@@ -64,7 +59,7 @@ public class TimeoutService {
      */
     @Transactional(rollbackFor = {AccountLockedException.class}, timeout = 2)
     public void timeoutWillNotRollback(long id, String username) throws InterruptedException {
-        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()).toString());
+        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()));
         int num = repository.updateUsernameById(id, username);
         log.info("修改的 ID: {}, 修改的数据: {}, 修改结果: {}", id, username, num);
         repository.updateAge(id);

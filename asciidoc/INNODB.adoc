@@ -1,0 +1,13 @@
+ReadView中主要包含 4 个比较重要的内容
+
+m_ids: 表示在生成 ReadView 时当前系统中活跃的读写事务的事务 ID 列表;
+
+min_trx_id: 表示在生成 ReadView 时当前系统中活跃的读写事务中最小的事务 ID,也就 m_ids 中的最小值;
+
+max_trx_id: 表示在生成 ReadView 时系统中应该分配给下一个事务的 ID 值;
+
+creator_trx_id: 表示生成该 ReadView 的事务的事务 ID.
+
+
+
+

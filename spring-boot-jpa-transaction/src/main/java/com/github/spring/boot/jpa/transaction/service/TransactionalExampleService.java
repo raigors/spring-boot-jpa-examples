@@ -71,7 +71,7 @@ public class TransactionalExampleService {
      */
     @Transactional(rollbackFor = {Exception.class}, noRollbackFor = {ArithmeticException.class})
     public void transactionWillNotRollback3(long id, String username) {
-        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()).toString());
+        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()));
         int num = repository.updateUsernameById(id, username);
         log.info("修改的 ID: {}, 修改的数据: {}, 修改结果: {}", id, username, num);
         int a = 11 / 0;
@@ -86,7 +86,7 @@ public class TransactionalExampleService {
      */
     @Transactional(rollbackFor = {ArithmeticException.class})
     public void transactionWillNotRollback4(long id, String username) {
-        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()).toString());
+        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()));
         int num = repository.updateUsernameById(id, username);
         log.info("修改的 ID: {}, 修改的数据: {}, 修改结果: {}", id, username, num);
         int a = 11 / 0;
