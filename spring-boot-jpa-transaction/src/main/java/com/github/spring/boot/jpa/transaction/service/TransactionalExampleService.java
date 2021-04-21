@@ -101,7 +101,7 @@ public class TransactionalExampleService {
      */
     @Transactional(rollbackFor = {ArithmeticException.class})
     public void transactionWillNotRollback5(long id, String username) throws NullPointerException {
-        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()).toString());
+        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()));
         int num = repository.updateUsernameById(id, username);
         log.info("修改的 ID: {}, 修改的数据: {}, 修改结果: {}", id, username, num);
         String path = null;
@@ -109,7 +109,7 @@ public class TransactionalExampleService {
     }
 
     private void method(long id, String username) throws IOException {
-        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()).toString());
+        log.info("修改之前的数据: {}", repository.findById(id).orElse(new UserInfoDO()));
         int num = repository.updateUsernameById(id, username);
         log.info("修改的 ID: {}, 修改的数据: {}, 修改结果: {}", id, username, num);
         throw new IOException(MESSAGE);
