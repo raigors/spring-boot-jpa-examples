@@ -9,29 +9,19 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>spring-boot-jpa-transaction</artifactId>
+    <artifactId>spring-boot-jpa-lock</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-jpa-transaction</name>
+    <name>spring-boot-jpa-lock</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
         <java.version>1.8</java.version>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.github</groupId>
             <artifactId>spring-boot-jpa-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -90,6 +80,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

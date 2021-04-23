@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
  * @author shishaodong
  * @version 0.0.1
  */
-@Audited
 @Getter
 @Setter
 @MappedSuperclass
