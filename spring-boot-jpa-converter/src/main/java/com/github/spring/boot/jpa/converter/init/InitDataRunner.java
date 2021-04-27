@@ -34,12 +34,12 @@ public class InitDataRunner implements CommandLineRunner {
     private IUserInfoRepository repository;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         if (repository.count() == 0) {
             for (int i = 0; i < NUM; i++) {
                 UserInfoDO user = getUserInfo();
                 repository.save(user);
-                log.info("save : {}", user.toString());
+                log.info("save : {}", user);
             }
         }
     }
@@ -50,6 +50,7 @@ public class InitDataRunner implements CommandLineRunner {
                 .password(getPassword())
                 .email(getEmail())
                 .age(getAge())
+                .ip(getIp())
                 .books(getBooks())
                 .build();
     }
@@ -78,4 +79,7 @@ public class InitDataRunner implements CommandLineRunner {
         return list;
     }
 
+    private String getIp() {
+        return FAKER.internet().publicIpV4Address();
+    }
 }

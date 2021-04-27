@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
  * @author shishaodong
  * @version 0.0.1
  */
-
+@Converter
 @RequiredArgsConstructor
 public class ListConverter implements AttributeConverter<List<String>, String> {
 

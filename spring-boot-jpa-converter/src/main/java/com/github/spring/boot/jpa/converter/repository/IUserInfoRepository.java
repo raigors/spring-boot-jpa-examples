@@ -14,4 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 
 public interface IUserInfoRepository extends JpaRepository<UserInfoDO, Long> {
+
+
+
 }

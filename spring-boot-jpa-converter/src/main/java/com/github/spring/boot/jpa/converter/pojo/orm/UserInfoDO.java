@@ -1,6 +1,7 @@
 package com.github.spring.boot.jpa.converter.pojo.orm;
 
 import com.github.spring.boot.jpa.common.pojo.orm.BaseEntity;
+import com.github.spring.boot.jpa.converter.pojo.converter.IpConverter;
 import com.github.spring.boot.jpa.converter.pojo.converter.ListConverter;
 import com.github.spring.boot.jpa.converter.pojo.converter.PasswordConverter;
 import lombok.AllArgsConstructor;
@@ -69,6 +70,10 @@ public class UserInfoDO extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "TINYINT COMMENT '用户年龄'")
     private Integer age;
+
+    @Convert(converter = IpConverter.class)
+    @Column(nullable = false, columnDefinition = "INT UNSIGNED COMMENT 'ip地址'")
+    private String ip;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)

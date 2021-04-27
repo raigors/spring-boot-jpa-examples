@@ -1,6 +1,7 @@
 package com.github.spring.boot.jpa.converter.pojo.converter;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
 /**
  * TODO
@@ -10,7 +11,7 @@ import javax.persistence.AttributeConverter;
  * @author shishaodong
  * @version 0.0.1
  */
-
+@Converter
 public class PasswordConverter implements AttributeConverter<String, String> {
 
     @Override
