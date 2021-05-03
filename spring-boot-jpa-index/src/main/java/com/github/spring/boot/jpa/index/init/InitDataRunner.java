@@ -1,6 +1,7 @@
 package com.github.spring.boot.jpa.index.init;
 
 import com.github.javafaker.Faker;
+import com.github.spring.boot.jpa.index.pojo.bo.EmailBO;
 import com.github.spring.boot.jpa.index.pojo.orm.UserInfoDO;
 import com.github.spring.boot.jpa.index.repository.IUserInfoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -9,15 +10,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 初始化数据
@@ -35,37 +29,19 @@ public class InitDataRunner implements CommandLineRunner {
 
     private static final Faker FAKER2 = new Faker(Locale.CHINA);
 
-    private static final int NUM = 1000000;
-
-    private static final int BATCH = 100;
-
-    private static final int THREADS = 140;
-
-    private static final ExecutorService exeService = Executors.newFixedThreadPool(THREADS);
+    private static final int NUM = 25;
 
     @Resource
     private IUserInfoRepository repository;
 
     @Override
-    public void run(String... args) throws InterruptedException {
-        AtomicLong atomicLong = new AtomicLong(repository.count());
-        for (int i = 0; i < THREADS; i++) {
-            TimeUnit.MILLISECONDS.sleep(new Random().nextInt(1000));
-            exeService.execute(() -> {
-                List<UserInfoDO> userList = new ArrayList<>(BATCH);
-                while (atomicLong.get() < NUM) {
-                    UserInfoDO user = getUserInfo();
-                    if (!repository.existsByUsername(user.getUsername())) {
-                        userList.add(user);
-                    }
-                    if (userList.size() >= BATCH) {
-                        repository.saveAll(userList);
-                        long sum = atomicLong.addAndGet(userList.size());
-                        log.info("保存数据:{}", sum);
-                        userList = new ArrayList<>();
-                    }
-                }
-            });
+    public void run(String... args) {
+        while (repository.count() < NUM){
+            UserInfoDO user = getUserInfo();
+            if (!repository.existsByUsername(user.getUsername())) {
+                repository.save(user);
+                log.info("保存数据:{}", user);
+            }
         }
         log.info("数据初始化完成!");
     }
@@ -73,7 +49,7 @@ public class InitDataRunner implements CommandLineRunner {
     private UserInfoDO getUserInfo() {
         return UserInfoDO.builder()
                 .username(getUsername())
-                .email(getEmail())
+                .email(new EmailBO(getEmail()))
                 .cellPhone(getCellPhone())
                 .age(getAge())
                 .birthday(getBirthday())
