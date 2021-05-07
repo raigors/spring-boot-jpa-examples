@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,6 +23,7 @@ import javax.persistence.Table;
 
 import static com.github.spring.boot.jpa.index.pojo.common.EmployeeConstant.EMPLOYEE_BASIC_INFO;
 import static com.github.spring.boot.jpa.index.pojo.common.EmployeeConstant.EMPLOYEE_EXTEND_INFO;
+import static javax.persistence.ConstraintMode.NO_CONSTRAINT;
 
 /**
  * TODO
@@ -43,7 +45,7 @@ import static com.github.spring.boot.jpa.index.pojo.common.EmployeeConstant.EMPL
 @DynamicUpdate
 @Entity
 @Table(name = EMPLOYEE_BASIC_INFO)
-@SecondaryTables(value = {@SecondaryTable(name = EMPLOYEE_EXTEND_INFO, pkJoinColumns = @PrimaryKeyJoinColumn(name = "employee_id"))})
+@SecondaryTables(value = {@SecondaryTable(name = EMPLOYEE_EXTEND_INFO, pkJoinColumns = @PrimaryKeyJoinColumn(name = "employee_id"), foreignKey = @ForeignKey(NO_CONSTRAINT))})
 public class EmployeeBasicInfoDO {
 
     @Id

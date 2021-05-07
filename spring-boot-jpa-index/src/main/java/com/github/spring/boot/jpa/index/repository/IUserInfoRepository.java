@@ -4,7 +4,6 @@ import com.github.spring.boot.jpa.index.pojo.orm.UserInfoDO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -24,5 +23,6 @@ public interface IUserInfoRepository extends JpaRepository<UserInfoDO, Long> {
     @Transactional(rollbackFor = Exception.class)
     @Query("UPDATE UserInfoDO AS user SET user.ip = :ip WHERE user.id = :id")
     int updateIpById(long id, String ip);
+
 
 }
