@@ -1,7 +1,6 @@
 package com.github.spring.boot.jpa.index.repository;
 
 import com.github.javafaker.Faker;
-import com.github.spring.boot.jpa.index.pojo.bo.EmailBO;
 import com.github.spring.boot.jpa.index.pojo.orm.UserInfoDO;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -62,7 +61,7 @@ class IUserInfoRepositoryTest {
     private UserInfoDO getUserInfo() {
         return UserInfoDO.builder()
                 .username(getUsername())
-                .email(new EmailBO(getEmail()))
+//                .email(new EmailBO(getEmail()))
                 .cellPhone(getCellPhone())
                 .age(getAge())
                 .birthday(getBirthday())

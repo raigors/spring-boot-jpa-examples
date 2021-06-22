@@ -1,0 +1,125 @@
+= Flyway 简单使用
+Doc Writer <spring-boot@qq.com>
+:icons: font
+:toc: right
+:pdf-themesdir: ../theme
+:pdf-fontsdir: ../font
+:pdf-theme: KaiGenGothicCN
+:homepage:
+:sourcedir: src/main
+:assetsdir: assets
+:imagesdir: {assetsdir}/images
+:revnumber: v1.0
+:revdate: 2021-06-21
+
+== Flyway 是什么
+
+Flyway是一个开源数据库迁移工具。比起配置，它更倾向于简单和约定。
+
+它大约基于7个基本命令:迁移，清理，信息，验证，撤销，基线和修复。
+
+迁移可以用SQL(支持特定于数据库的语法(如PL/SQL、T-SQL等)或Java(用于高级数据转换或处理lob)编写。
+
+它有一个命令行客户机。如果您在JVM上，我们建议使用Java API(同样适用于Android)在应用程序启动时迁移数据库。或者，你也可以使用Maven插件或Gradle插件。
+
+如果这还不够，还有插件可供Spring Boot, Dropwizard, Grails, Play, SBT, Ant, Griffon, Grunt, Ninja和更多!
+
+== Flyway 支持的数据库版本
+
+支持的数据库有 Oracle、SQL Server(包括 Amazon RDS、Azure SQL Database)、Azure Synapse(以前的数据仓库)、DB2、MySQL(包括 Amazon RDS、Azure Database 和谷歌 Cloud SQL)、 +
+Aurora MySQL、MariaDB、Percona XtraDB Cluster、TestContainers、PostgreSQL(包括 Amazon RDS、Azure Database、谷歌 Cloud SQL和Heroku)、Aurora PostgreSQL, Redshift, +
+CockroachDB, SAP HANA, Sybase ASE, Informix, H2, HSQLDB, Derby，Snowflake，SQLite 和 Firebird。
+
+== SQL文件
+
+=== SQL 文件的格式
+
+Flyway 将 SQL 文件分为 `Versioned` 、`Repeatable` 和 `Undo` 三种：
+
+这三种的命名规则如下图：
+
+* `Prefix`-前缀 可配置，前缀标识，默认值 `V` 表示 `Versioned`, `R` 表示 `Repeatable`, `U` 表示 `Undo`;
+* `Version`-版本 标识版本号, 由一个或多个数字构成, 数字之间的分隔符可用点 . 或下划线 _ ;
+* `Separator`-分隔符 可配置, 用于分隔版本标识与描述信息, 默认为 *两个下划线* __ ;
+* `Description`-描述 描述信息, 文字之间可以用下划线 _ 或空格 分隔;
+* `Suffix`-后缀 可配置, 后续标识, 默认为 .sql;
+
+image::flyway-版本迁移.jpg[title="版本迁移"]
+
+=== SQL 版本细节
+
+Flyway 是如何比较两个 SQL 文件的先后顺序呢？它采用 采用左对齐原则, 缺位用 0 代替 。举几个例子：
+
+`1.0.1.1` 比 `1.0.1` 版本高。 `1.0.10` 比 `1.0.9.4` 版本高。
+
+`1.0.10` 和 `1.0.010` 版本号一样高, 每个版本号部分的前导 0 会被忽略。
+
+[TIP]
+====
+. `Versioned` 用于版本升级, 每个版本有唯一的版本号并只能执行一次.
+
+. `Repeatable` 可重复执行, 当 Flyway检测到 `Repeatable` 类型的 SQL 脚本的 `checksum` 有变动, Flyway 就会重新应用该脚本. 它并不用于版本更新, 这类的 migration 总是在 Versioned 执行之后才被执行。
+
+. `Undo` 用于撤销具有相同版本的版本化迁移带来的影响。但是该回滚过于粗暴，过于机械化，一般不推荐使用。一般建议使用 Versioned 模式来解决。
+====
+
+== Flyway是如何工作的
+
+Flyway 需要在 DB 中先创建一个 `metadata` 表 (缺省表名为 `flyway_schema_history` ), 在该表中保存着每次 migration （迁移）的记录, 记录包含 migration 脚本的版本号和 SQL 脚本的 `checksum` 值。 +
+下图表示了多个数据库版本。
+
+Flyway 工作流程如下：
+
+* 项目启动，应用程序完成数据库连接池的建立后，Flyway自动运行;
+* 初次使用时，Flyway会创建一个 `flyway_schema_history` 表，用于记录sql执行记录;
+* Flyway会扫描项目指定路径下(默认是 `classpath:db/migration`)的所有sql脚本，与 `flyway_schema_history` 表脚本记录进行比对。如果数据库记录执行过的脚本记录，与项目中的sql脚本不一致，Flyway会报错并停止项目执行;
+* 如果校验通过，则根据表中的sql记录最大版本号，忽略所有版本号不大于该版本的脚本。再按照版本号从小到大，逐个执行其余脚本。
+
+[IMPORTANT]
+====
+我们在定义脚本的时候，V 字开头的脚本只会执行一次，而 R 字开头的脚本，只要脚本内容发生了变化，启动时候就会执行。
+
+使用了 Flyway 之后，如果再想进行数据库版本升级，就不用该以前的数据库脚本了，直接创建新的数据库脚本，项目在启动时检测了有新的更高版本的脚本，就会自动执行，这样，在和其他同事配合工作时，也会方便很多。 +
+因为正常我们都是从 Git 上拉代码下来，不拉数据库脚本，这样要是有人更新了数据库，其他同事不一定能够收到最新的通知，使用了 Flyway 就可以有效避免这个问题了。
+
+所有的脚本，一旦执行了，就会在 `flyway_schema_history` 表中有记录，如果你不小心搞错了，可以手动从 `flyway_schema_history` 表中删除记录，然后修改 SQL 脚本后再重新启动（生产环境不建议）。
+====
+
+== Flyway 与 SpringBoot 的集成
+
+[source,xml]
+----
+include::pom.xml[lines=36..39]
+----
+
+添加 Flyway 相关的配置
+
+[source,properties]
+----
+include::src/main/resources/application-flyway1.properties[lines=1..-1]
+----
+
+== 备注
+
+* 生产务必禁 `spring.flyway.cleanDisabled` 。
+* 尽量避免使用 Undo 模式。
+* 开发版本号尽量根据团队来进行多层次的命名避免混乱。比如 `V1.0.1__ProjectName_{Feature|fix}_Developer_Description.sql` ，这种命名同时也可以获取更多脚本的开发者和相关功能的信息。
+* `spring.flyway.outOfOrder` 取值 生产上使用 false，开发中使用 true.
+* 可以在 `classpath:db/migration` 下按照版本创建文件夹方便管理
+
+多个系统公用一个 数据库 schema 时配置 `spring.flyway.table` 为不同的系统设置不同的 metadata 表名而不使用缺省值 `flyway_schema_history` 。
+
+validate校验 用于校验，范围包括已升级的脚本是否改名，已执行的版本内容是否修改。所有针对已执行的版本进行的改动都会导致校验失败。
+
+== FAQ
+
+*flyway会做哪些事情?*::
+- [*] SQL 变更管理;
+- [*] SQL 校验;
+- [ ] 数据库版本管理;
+- [ ] 是否支持回滚?PRO 版本支持回滚;
+
+
+
+
+

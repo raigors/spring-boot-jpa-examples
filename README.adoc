@@ -64,7 +64,24 @@ fsync会等待写磁盘结束才会返回。
 == 查看 redo log 相关的配置.
 
 查看 redo log 的文件大小, 默认是 48M.
+
 `SHOW GLOBAL VARIABLES LIKE '%innodb_log_file_size%'`;
+
+`docker exec -it d4b70733133d /bin/sh`
+
+进入文件夹
+
+`cd /var/lib/mysql`
+
+查看文件
+
+`ls -alh`
+
+查看文件
+
+`-rw-r----- 1 mysql mysql  48M May 17 01:06  ib_logfile0`
+
+`-rw-r----- 1 mysql mysql  48M May  5 16:18  ib_logfile1`
 
 查看 redo log 的个数:
 `SHOW GLOBAL VARIABLES LIKE '%innodb_log_files_in_group%'`;

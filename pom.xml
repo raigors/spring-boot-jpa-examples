@@ -31,6 +31,7 @@
         <module>spring-boot-jpa-converter</module>
         <module>spring-boot-jpa-envers</module>
         <module>spring-boot-jpa-event</module>
+        <module>spring-boot-jpa-flyway</module>
         <module>spring-boot-jpa-index</module>
         <module>spring-boot-jpa-jpql</module>
         <module>spring-boot-jpa-json</module>
